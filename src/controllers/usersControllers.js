@@ -1,9 +1,9 @@
 const { User } = require("../models/index");
 const { encrypt, compare } = require("../utils/helpers/handlerBcrypt");
 const { tockenSign } = require("../utils/helpers/generateTocken");
-// --- Exprecion de Email ---
-const expressionEmail =
-  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const expressionEmail = require("../utils/helpers/expressionEmail");
+const expressionPassword = require("../utils/helpers/expressionPassword");
+const emailer = require("../utils/helpers/emailer");
 
 const getAllUsers = async (req, res) => {
   const users = await User.findAll();
@@ -14,35 +14,41 @@ const register = async (req, res, next) => {
   const { body } = req;
   try {
     // Validamos los campos que nos pasan
-    if (
-      !expressionEmail.test(body.email) ||
-      !body.password ||
-      !body.name.length >= 4
-    ) {
-      // Si hay algun error con algun campo de creacion devuelve un mensj con el error
-      return res.send({ msg: "Complete all of inputs" });
-    } else {
-      // Sino sigue el procedimiento
-      // Buscamos en la base de datos si el usuario ya existe
-      const user = await User.findOne({
-        where: {
-          email: body.email,
-        },
+
+    if (!expressionEmail.test(body.email)) {
+      return res.status(403).send({ msg: "Enter valid email" });
+    }
+    if (!expressionPassword.test(body.password)) {
+      return res.status(403).send({
+        msg: "Password must have minimum eight characters, at least one letter and one number",
       });
-      if (!user) {
-        // si no encuentra al usuario se lo crea
-        const passwordHash = await encrypt(body.password); // Encriptamos la contraseña
-        const newUser = {
-          email: body.email,
-          password: passwordHash,
-          name: body.name,
-        };
-        const createdWorkout = await User.create(newUser);
-        return res.send({ status: "OK", data: createdWorkout });
-      } else {
-        // si encuentra al usuario no se crea nada
-        return res.status(401).json({ message: "User already exists" });
-      }
+    }
+    if (body.name.length < 4) {
+      return res
+        .status(403)
+        .send({ msg: "Name must have more than 4 characters" });
+    }
+
+    const user = await User.findOne({
+      where: {
+        email: body.email,
+      },
+    });
+
+    if (!user) {
+      // si no encuentra al usuario se lo crea
+      const passwordHash = await encrypt(body.password); // Encriptamos la contraseña
+      const newUser = {
+        email: body.email,
+        password: passwordHash,
+        name: body.name,
+      };
+      const createdWorkout = await User.create(newUser);
+      //emailer(newUser);
+      return res.send({ status: "OK", data: createdWorkout });
+    } else {
+      // si encuentra al usuario no se crea nada
+      return res.status(401).json({ message: "User already exists" });
     }
   } catch (error) {
     next(error);

@@ -3,6 +3,9 @@ const express = require("express");
 const morgan = require("morgan");
 const { conn } = require("./models/index");
 const v1Router = require("./v1/routes/indexRoutes");
+// Importamos el modelo los elementos que vamos a precargar
+const { createNewGenre } = require("./controllers/genreControllers");
+const { createBeforeMovie } = require("./utils/helpers/moviesPrecarga");
 const app = express();
 const { PORT } = require("./utils/config/index");
 
@@ -30,6 +33,9 @@ conn
     app.listen(PORT, () => {
       console.log(`🚀 API is listening on port ${PORT}`);
     });
+    // HACEMOS LA PRECARGA
+    createNewGenre();
+    createBeforeMovie();
   })
   .catch((err) => {
     console.error("Unable to connect to the database:", err);

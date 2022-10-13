@@ -2,7 +2,7 @@ const { Character, Movie } = require("../models/index");
 const { Op } = require("sequelize");
 
 const getAllCharacters = async (req, res, next) => {
-  const { name, age, weigth, movieId } = req.query;
+  const { name, age, weigth, movies } = req.query;
   try {
     // Buscar por nombre
     if (name) {
@@ -18,6 +18,7 @@ const getAllCharacters = async (req, res, next) => {
       }
       return res.send({ status: "OK", data: characters });
     }
+
     // ------- POR EDAD --------
     else if (age) {
       const characters = await Character.findAll({
@@ -26,13 +27,13 @@ const getAllCharacters = async (req, res, next) => {
           age,
         },
       });
-      // SI NO HAY ES PORQUE NO EXISTE
+
       if (!characters.length) {
         return res.send({ msg: "Characters not found" });
       }
-      // SI HAY ES PORQUE EXISTE
       return res.send({ status: "OK", data: characters });
     }
+
     // ------- POR PESO --------
     else if (weigth) {
       const characters = await Character.findAll({
@@ -41,39 +42,40 @@ const getAllCharacters = async (req, res, next) => {
           weigth,
         },
       });
-      // SI NO HAY ES PORQUE NO EXISTE
+
       if (!characters.length) {
         return res.send({ msg: "Characters not found" });
       }
-      // SI HAY ES PORQUE EXISTE
       return res.send({ status: "OK", data: characters });
     }
+
     // ------- POR PELICULA ASOCIADA --------
-    else if (movieId) {
+    else if (movies) {
+      console.log(movies);
       const characters = await Character.findAll({
         attributes: ["image", "name"],
         include: {
           model: Movie,
           attributes: ["title"],
           where: {
-            id: movieId,
+            id: movies,
           },
           through: {
             attributes: [],
           },
         },
       });
-      // SI NO HAY ES PORQUE NO EXISTE
+
       if (!characters.length) {
         return res.send({ msg: "Characters not found" });
       }
-      // SI HAY ES PORQUE EXISTE
       return res.send({ status: "OK", data: characters });
     }
+
     // ------- SIN FILTRO --------
     else {
       const characters = await Character.findAll({
-        attributes: ["id", "image", "name"],
+        attributes: ["image", "name"],
       });
       if (!characters.length) {
         return res.send({ msg: "No characters created yet" });
@@ -85,7 +87,7 @@ const getAllCharacters = async (req, res, next) => {
   }
 };
 
-const getOneCharacter = async (req, res) => {
+const getOneCharacter = async (req, res, next) => {
   // sabemos que vamos a recibir un id
   const { characterId } = req.params;
   try {
@@ -117,7 +119,13 @@ const getOneCharacter = async (req, res) => {
 const createNewCharacter = async (req, res, next) => {
   const { body } = req;
   try {
-    if (!body.image || !body.name || !body.age || !body.weigth) {
+    if (
+      !body.image ||
+      !body.name ||
+      !body.movies ||
+      !body.age ||
+      !body.weigth
+    ) {
       return res.send({ msg: "Complete all of inputs" });
     }
     const [newCharacter, created] = await Character.findOrCreate({
@@ -129,8 +137,8 @@ const createNewCharacter = async (req, res, next) => {
         history: body.history,
       },
     });
-    console.log(created);
-    console.log(newCharacter.toJSON());
+    //console.log(created);
+    //console.log(newCharacter.toJSON());
     // Si created es false sig que no lo creo porque ya existe un elemento
     if (created === false) return res.send({ msg: "Character already exists" });
     // Si created es true significa que lo creo, entonces seteamos las peliculas y devolvemos todo

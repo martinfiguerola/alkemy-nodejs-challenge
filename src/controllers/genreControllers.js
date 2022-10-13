@@ -1,4 +1,5 @@
 const { Genre } = require("../models");
+const genres = require("../data/genres");
 
 const getAllGenre = async (req, res) => {
   const genres = await Genre.findAll({
@@ -8,19 +9,13 @@ const getAllGenre = async (req, res) => {
 };
 
 const createNewGenre = async (req, res, next) => {
-  const { name, image } = req.body;
-  console.log(name);
-  console.log(image);
   try {
-    if (!name) return res.send({ msg: "Complete all of inputs" });
-    const [newGenre, created] = await Genre.findOrCreate({
-      where: {
-        name,
-        image,
-      },
-    });
-    if (created === false) return res.send({ msg: "Genre already exists" });
-    return res.send({ status: "OK", data: newGenre });
+    const db = await Genre.findAll();
+    if (db.length === 0) {
+      genres.forEach((genre) => {
+        Genre.create(genre);
+      });
+    }
   } catch (error) {
     next(error);
   }

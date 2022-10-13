@@ -8,4 +8,5 @@ module.exports = {
   dbPassword: process.env.DB_PASSWORD,
   dbhost: process.env.HOST,
   jwtSecret: process.env.JWT_SECRET,
+  sendgridApi: process.env.SENDGRID_API,
 };

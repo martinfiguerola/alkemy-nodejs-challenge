@@ -3,7 +3,7 @@ const characterController = require("../../controllers/charactersControllers");
 const { checkAuth } = require("../../utils/middleware/auth");
 const router = Router();
 
-router.get("/", checkAuth, characterController.getAllCharacters);
+router.get("/", characterController.getAllCharacters);
 
 router.get("/:characterId", characterController.getOneCharacter);
 
