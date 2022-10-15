@@ -126,7 +126,9 @@ const createNewCharacter = async (req, res, next) => {
       !body.age ||
       !body.weigth
     ) {
-      return res.send({ msg: "Complete all of inputs" });
+      return res
+        .status(500)
+        .send({ status: "FAILED", data: "Complete all of inputs" });
     }
     const [newCharacter, created] = await Character.findOrCreate({
       where: {
@@ -140,7 +142,11 @@ const createNewCharacter = async (req, res, next) => {
     //console.log(created);
     //console.log(newCharacter.toJSON());
     // Si created es false sig que no lo creo porque ya existe un elemento
-    if (created === false) return res.send({ msg: "Character already exists" });
+    if (created === false) {
+      return res
+        .status(500)
+        .send({ status: "FAILED", data: "Character already exists" });
+    }
     // Si created es true significa que lo creo, entonces seteamos las peliculas y devolvemos todo
     await newCharacter.setMovies(body.movies);
     return res.send({ status: "OK", data: newCharacter });

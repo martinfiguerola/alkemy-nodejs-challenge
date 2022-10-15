@@ -6,6 +6,9 @@ const v1Router = require("./v1/routes/indexRoutes");
 // Importamos el modelo los elementos que vamos a precargar
 const { createNewGenre } = require("./controllers/genreControllers");
 const { createBeforeMovie } = require("./utils/helpers/moviesPrecarga");
+// -- SWAGGER --
+const swaggerSetup = require("./utils/middleware/swagger");
+const swaggerUi = require("swagger-ui-express");
 const app = express();
 const { PORT } = require("./utils/config/index");
 
@@ -16,6 +19,7 @@ app.use(morgan("dev"));
 
 // Aca vamos a setear todos nuestras rutas
 app.use("/api/v1", v1Router);
+app.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSetup));
 
 // Aca vamos a setear todos nuestro middleware de control de errores
 app.use((err, req, res, next) => {

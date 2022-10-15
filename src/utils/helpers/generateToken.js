@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { jwtSecret } = require("../config/index");
 
-const tockenSign = async (user) => {
+const tokenSign = async (user) => {
   return jwt.sign(
     {
       id: user.id,
@@ -23,6 +23,6 @@ const checkToken = async (token) => {
 };
 
 module.exports = {
-  tockenSign,
+  tokenSign,
   checkToken,
 };

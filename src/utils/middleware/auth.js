@@ -1,4 +1,4 @@
-const { checkToken } = require("../helpers/generateTocken");
+const { checkToken } = require("../helpers/generateToken");
 
 const checkAuth = async (req, res, next) => {
   //console.log(req.headers.authorization.split(" ").pop());

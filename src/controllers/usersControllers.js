@@ -1,6 +1,6 @@
 const { User } = require("../models/index");
 const { encrypt, compare } = require("../utils/helpers/handlerBcrypt");
-const { tockenSign } = require("../utils/helpers/generateTocken");
+const { tokenSign } = require("../utils/helpers/generateToken");
 const expressionEmail = require("../utils/helpers/expressionEmail");
 const expressionPassword = require("../utils/helpers/expressionPassword");
 const emailer = require("../utils/helpers/emailer");
@@ -78,10 +78,10 @@ const login = async (req, res, next) => {
     if (!checkPassword) {
       return res.send({ msg: "incorrect e-mail address or password" });
     }
-    const tockenSession = await tockenSign(user);
+    const tokenSession = await tokenSign(user);
     // Si es true significa que la contraseña es la correcta
     // devolvemos el usuario y el tocken
-    return res.send({ status: "OK", data: user, tocken: tockenSession });
+    return res.send({ status: "OK", data: user, token: tokenSession });
   } catch (error) {
     next(error);
   }

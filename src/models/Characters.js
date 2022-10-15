@@ -22,7 +22,7 @@ module.exports = (sequelize) => {
         type: DataTypes.INTEGER,
       },
       weigth: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.INTEGER,
       },
       history: {
         type: DataTypes.STRING,
