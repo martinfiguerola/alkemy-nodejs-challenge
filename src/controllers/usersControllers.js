@@ -16,17 +16,24 @@ const register = async (req, res, next) => {
     // Validamos los campos que nos pasan
 
     if (!expressionEmail.test(body.email)) {
-      return res.status(403).send({ msg: "Enter valid email" });
+      return res
+        .status(400)
+        .send({ status: "FAILED", data: { error: "Enter valid email" } });
     }
     if (!expressionPassword.test(body.password)) {
-      return res.status(403).send({
-        msg: "Password must have minimum eight characters, at least one letter and one number",
+      return res.status(400).send({
+        status: "FAILED",
+        data: {
+          error:
+            "Password must have minimum eight characters, at least one letter and one number",
+        },
       });
     }
     if (body.name.length < 4) {
-      return res
-        .status(403)
-        .send({ msg: "Name must have more than 4 characters" });
+      return res.status(403).send({
+        status: "FAILED",
+        data: { error: "Name must have more than 4 characters" },
+      });
     }
 
     const user = await User.findOne({
@@ -48,7 +55,10 @@ const register = async (req, res, next) => {
       return res.send({ status: "OK", data: createdWorkout });
     } else {
       // si encuentra al usuario no se crea nada
-      return res.status(401).json({ message: "User already exists" });
+      return res.send({
+        status: "FAILED",
+        data: { error: "User already exists" },
+      });
     }
   } catch (error) {
     next(error);
@@ -67,7 +77,11 @@ const login = async (req, res, next) => {
       },
     });
     // Si no hay user significa que no existe el email
-    if (!user) return res.send({ msg: "incorrect e-mail address or password" });
+    if (!user)
+      return res.send({
+        status: "FAILED",
+        data: { error: "incorrect e-mail address or password" },
+      });
 
     // Si user tiene algo sigue el proceso --->
 
@@ -76,12 +90,15 @@ const login = async (req, res, next) => {
 
     // Si no es true significa que la contraseña es incorrecta
     if (!checkPassword) {
-      return res.send({ msg: "incorrect e-mail address or password" });
+      return res.send({
+        status: "FAILED",
+        data: { error: "incorrect e-mail address or password" },
+      });
     }
     const tokenSession = await tokenSign(user);
     // Si es true significa que la contraseña es la correcta
     // devolvemos el usuario y el tocken
-    return res.send({ status: "OK", data: user, token: tokenSession });
+    return res.send({ status: "OK", data: { token: tokenSession } });
   } catch (error) {
     next(error);
   }

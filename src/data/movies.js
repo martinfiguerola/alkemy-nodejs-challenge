@@ -24,7 +24,7 @@ module.exports = [
   {
     image:
       "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTVsCeWbo-pNfiHgiWzV4HDO9tVjzlqb0QzbFiZCJem2Q0zZtZi",
-    title: "Tarzán",
+    title: "Tarzan",
     quallification: "5",
     genreId: "6",
   },

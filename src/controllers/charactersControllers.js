@@ -14,7 +14,10 @@ const getAllCharacters = async (req, res, next) => {
         },
       });
       if (!characters.length) {
-        return res.send({ msg: "Characters not found" });
+        return res.send({
+          status: "FAILED",
+          data: { error: "Characters not found" },
+        });
       }
       return res.send({ status: "OK", data: characters });
     }
@@ -29,7 +32,10 @@ const getAllCharacters = async (req, res, next) => {
       });
 
       if (!characters.length) {
-        return res.send({ msg: "Characters not found" });
+        return res.send({
+          status: "FAILED",
+          data: { error: "Characters not found" },
+        });
       }
       return res.send({ status: "OK", data: characters });
     }
@@ -44,7 +50,10 @@ const getAllCharacters = async (req, res, next) => {
       });
 
       if (!characters.length) {
-        return res.send({ msg: "Characters not found" });
+        return res.send({
+          status: "FAILED",
+          data: { error: "Characters not found" },
+        });
       }
       return res.send({ status: "OK", data: characters });
     }
@@ -67,7 +76,10 @@ const getAllCharacters = async (req, res, next) => {
       });
 
       if (!characters.length) {
-        return res.send({ msg: "Characters not found" });
+        return res.send({
+          status: "FAILED",
+          data: { error: "Characters not found" },
+        });
       }
       return res.send({ status: "OK", data: characters });
     }
@@ -78,7 +90,10 @@ const getAllCharacters = async (req, res, next) => {
         attributes: ["image", "name"],
       });
       if (!characters.length) {
-        return res.send({ msg: "No characters created yet" });
+        return res.send({
+          status: "FAILED",
+          data: { error: "No characters created yet" },
+        });
       }
       return res.send({ status: "OK", data: characters });
     }
@@ -106,7 +121,10 @@ const getOneCharacter = async (req, res, next) => {
     });
     // si no hay nada significa que el character no existe
     if (character.length === 0) {
-      return res.send({ msg: "Character does not exist" });
+      return res.send({
+        status: "FAILED",
+        data: { error: "Character does not exist" },
+      });
     }
     // Y si hay algo sig que si existe, entonces retornamos el character con todos los atributos
     // y peliculas asociadas
@@ -128,7 +146,7 @@ const createNewCharacter = async (req, res, next) => {
     ) {
       return res
         .status(500)
-        .send({ status: "FAILED", data: "Complete all of inputs" });
+        .send({ status: "FAILED", data: { error: "Complete all of inputs" } });
     }
     const [newCharacter, created] = await Character.findOrCreate({
       where: {
@@ -143,9 +161,10 @@ const createNewCharacter = async (req, res, next) => {
     //console.log(newCharacter.toJSON());
     // Si created es false sig que no lo creo porque ya existe un elemento
     if (created === false) {
-      return res
-        .status(500)
-        .send({ status: "FAILED", data: "Character already exists" });
+      return res.status(500).send({
+        status: "FAILED",
+        data: { error: "Character already exists" },
+      });
     }
     // Si created es true significa que lo creo, entonces seteamos las peliculas y devolvemos todo
     await newCharacter.setMovies(body.movies);
@@ -161,19 +180,29 @@ const updateOneCharacter = async (req, res, next) => {
   try {
     // recibimos el body y verificamos que nos pasen algo sino no se puede actualizar
     if (JSON.stringify(body) == "{}") {
-      return res.send({ msg: "Enter the data you want to update" });
+      return res.send({
+        status: "FAILED",
+        data: { error: "Enter the data you want to update" },
+      });
     }
     // BUSCAMOS EN LA BASE DE DATOS SI EL USUARIO QUE QUIEREN EDITAR EXISTE
     const character = await Character.findByPk(characterId);
     // SI CHARACTER ES NULL DEVOLVEMOS UN MENSAJE DE ERROR
-    if (!character) return res.send({ msg: "Character does not exist" });
+    if (!character)
+      return res.send({
+        status: "FAILED",
+        data: { error: "Character does not exist" },
+      });
     // SI TIENE ALGO LO ACTUALIZAMOS Y RETORAMOS UN MENSAJE OK
     await Character.update(body, {
       where: {
         id: characterId,
       },
     });
-    return res.send({ msg: "Character updated successfully" });
+    return res.send({
+      status: "OK",
+      data: { msg: "Character updated successfully" },
+    });
   } catch (error) {
     next(error);
   }
@@ -186,12 +215,19 @@ const deleteOneCharacter = async (req, res, next) => {
     // VERIFICAR SI EXISTE ESTE CHARACTER
     const character = await Character.findByPk(characterId);
     // SI NO ESTA
-    if (!character) return res.send({ msg: "Character does not exist" });
+    if (!character)
+      return res.send({
+        status: "FAILED",
+        data: { error: "Character does not exist" },
+      });
     // SI ESTA
     await Character.destroy({
       where: { id: characterId },
     });
-    return res.send({ msg: "Character removed successfully" });
+    return res.send({
+      status: "OK",
+      data: { error: "Character removed successfully" },
+    });
   } catch (error) {
     next(error);
   }

@@ -33,37 +33,91 @@ const router = Router();
  *        schema:
  *          type: integer
  *    responses:
- *      '200':
- *        description: successful operation
+ *          200:
+ *            description: OK
+ *            content:
+ *              application/json:
+ *                schema:
+ *                  type: object
+ *                  properties:
+ *                    status:
+ *                      type: string
+ *                      example: OK
+ *                    data:
+ *                      type: object
+ *                      example: all characters filtered or searched
+ *          5XX:
+ *            description: FAILED
+ *            content:
+ *              application/json:
+ *                schema:
+ *                  type: object
+ *                  properties:
+ *                    status:
+ *                      type: string
+ *                      example: FAILED
+ *                    data:
+ *                      type: object
+ *                      properties:
+ *                        error:
+ *                          type: string
+ *                          example: "Some error message"
  *    security:
  *      - bearerAuth: []
- *
- *
  */
+
 router.get("/", characterController.getAllCharacters);
 
 // --- GET ONE CHARACTERS ---
 /**
- *@swagger
- *  /api/v1/characters/{characterId}:
- *    get:
- *      tags:
- *        - character
- *      summary: Get character by id
- *      parameters:
- *        - name: characterId
- *          in: path
- *          description: Character ID
- *          required: true
- *          schema:
- *            type: string
- *            format: uuid
- *      responses:
- *        200:
- *          description: successful operation
- *      security:
- *      - bearerAuth: []
- *
+ *  @swagger
+ *    /api/v1/characters/{characterId}:
+ *      get:
+ *        tags:
+ *          - character
+ *        summary: Get character id
+ *        description: get movie by params (characterId)
+ *        parameters:
+ *          - name: characterId
+ *            in: path
+ *            description: character ID
+ *            required: true
+ *            schema:
+ *              type: string
+ *              format: uuid
+ *        responses:
+ *          200:
+ *            description: OK
+ *            content:
+ *              application/json:
+ *                schema:
+ *                  type: object
+ *                  properties:
+ *                    status:
+ *                      type: string
+ *                      example: OK
+ *                    data:
+ *                      type: array
+ *                      items:
+ *                        $ref: "#/components/schemas/character"
+ *          5XX:
+ *            description: FAILED
+ *            content:
+ *              application/json:
+ *                schema:
+ *                  type: object
+ *                  properties:
+ *                    status:
+ *                      type: string
+ *                      example: FAILED
+ *                    data:
+ *                      type: object
+ *                      properties:
+ *                        error:
+ *                          type: string
+ *                          example: "Some error message"
+ *        security:
+ *          - bearerAuth: []
  *
  *
  */
@@ -77,8 +131,8 @@ router.get("/:characterId", characterController.getOneCharacter);
  *    post:
  *      tags:
  *        - character
- *      summary: Create character
- *      description: This can only be done by the logged in user
+ *      summary: Create new character
+ *      description: Add a new character to the DB
  *      requestBody:
  *        description: Created character object
  *        content:
@@ -91,19 +145,20 @@ router.get("/:characterId", characterController.getOneCharacter);
  *                - age
  *                - image
  *                - weigth
+ *                - movies
  *              properties:
  *                image:
  *                  type: string
- *                  default: https://i.blogs.es/73b07d/tarzan-3/450_1000.webp
+ *                  default: https://i.pinimg.com/736x/59/ee/1c/59ee1ceea702597255e47a823c30ee08.jpg
  *                name:
  *                  type: string
- *                  default: Tarzan
+ *                  default: Jane Porter
  *                age:
  *                  type: integer
- *                  default: 30
+ *                  default: 27
  *                weigth:
  *                  type: integer
- *                  default: 50
+ *                  default: 55
  *                history:
  *                  type: string
  *                  default: the character history
@@ -111,12 +166,38 @@ router.get("/:characterId", characterController.getOneCharacter);
  *                  type: array
  *                  default: [4]
  *      responses:
- *        200:
- *          description: returns the character that was created
- *        5XX:
- *          description: validation error
+ *          200:
+ *            description: OK
+ *            content:
+ *              application/json:
+ *                schema:
+ *                  type: object
+ *                  properties:
+ *                    status:
+ *                      type: string
+ *                      example: OK
+ *                    data:
+ *                      type: array
+ *                      items:
+ *                        $ref: "#/components/schemas/character"
+ *          5XX:
+ *            description: FAILED
+ *            content:
+ *              application/json:
+ *                schema:
+ *                  type: object
+ *                  properties:
+ *                    status:
+ *                      type: string
+ *                      example: FAILED
+ *                    data:
+ *                      type: object
+ *                      properties:
+ *                        error:
+ *                          type: string
+ *                          example: "Some error message"
  *      security:
- *        - bearerAuth: []
+ *          - bearerAuth: []
  *
  *
  */
@@ -125,7 +206,7 @@ router.post("/", characterController.createNewCharacter);
 // --- UPDATE CHARACTER  ---
 /**
  *  @swagger
- *    /api/v1/characterS/{characterId}:
+ *    /api/v1/characters/{characterId}:
  *      put:
  *        tags:
  *          - character
@@ -155,16 +236,41 @@ router.post("/", characterController.createNewCharacter);
  *                    default: update character history
  *        responses:
  *          200:
- *            description: Character updated successfully
+ *            description: OK
+ *            content:
+ *              application/json:
+ *                schema:
+ *                  type: object
+ *                  properties:
+ *                    status:
+ *                      type: string
+ *                      example: OK
+ *                    data:
+ *                      type: object
+ *                      properties:
+ *                        msg:
+ *                          type: string
+ *                          example: "Some success message"
  *          5XX:
- *            description: validation error
+ *            description: FAILED
+ *            content:
+ *              application/json:
+ *                schema:
+ *                  type: object
+ *                  properties:
+ *                    status:
+ *                      type: string
+ *                      example: FAILED
+ *                    data:
+ *                      type: object
+ *                      properties:
+ *                        error:
+ *                          type: string
+ *                          example: "Some error message"
  *        security:
  *          - bearerAuth: []
- *
- *
- *
- *
  */
+
 router.put("/:characterId", characterController.updateOneCharacter);
 
 // --- DELETE ---
@@ -186,12 +292,39 @@ router.put("/:characterId", characterController.updateOneCharacter);
  *              format: uuid
  *        responses:
  *          200:
- *            description: Character removed successfully
+ *            description: OK
+ *            content:
+ *              application/json:
+ *                schema:
+ *                  type: object
+ *                  properties:
+ *                    status:
+ *                      type: string
+ *                      example: OK
+ *                    data:
+ *                      type: object
+ *                      properties:
+ *                        msg:
+ *                          type: string
+ *                          example: "Some success message"
  *          5XX:
- *            description: validation error
+ *            description: FAILED
+ *            content:
+ *              application/json:
+ *                schema:
+ *                  type: object
+ *                  properties:
+ *                    status:
+ *                      type: string
+ *                      example: FAILED
+ *                    data:
+ *                      type: object
+ *                      properties:
+ *                        error:
+ *                          type: string
+ *                          example: "Some error message"
  *        security:
  *          - bearerAuth: []
- *
  */
 router.delete("/:characterId", characterController.deleteOneCharacter);
 

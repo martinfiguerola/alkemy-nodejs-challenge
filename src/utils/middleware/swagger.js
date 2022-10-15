@@ -56,26 +56,27 @@ const swaggerDefinition = {
           image: {
             type: "string",
             description: "the character image",
+            example:
+              "https://i.pinimg.com/736x/59/ee/1c/59ee1ceea702597255e47a823c30ee08.jpg",
           },
           name: {
             type: "string",
             description: "the character name",
+            example: "Jane Porter",
           },
           age: {
             type: "integer",
             description: "the character age",
+            example: 27,
           },
           weigth: {
             type: "integer",
             description: "the character weigth",
+            example: 60,
           },
           history: {
             type: "string",
             description: "the character history",
-          },
-          movies: {
-            type: "array",
-            description: "id of the movies associated with the character",
           },
         },
       },
@@ -86,22 +87,33 @@ const swaggerDefinition = {
           id: {
             type: "integer",
             readOnly: true,
+            example: 5,
           },
           image: {
             type: "string",
             description: "the movie image",
+            example:
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqjiLiIFJaZSqEAtCCT0N1bw1_Wm9oJHVvHHASpr4qdg3TitCB",
           },
           title: {
             type: "string",
             description: "the movie title",
+            example: "Enredados",
           },
           quallification: {
             type: "integer",
-            description: "the quallification movie",
+            description: "rating from 1 to 5",
+            example: 3,
+          },
+          createdAt: {
+            type: "string",
+            readOnly: true,
+            example: "4/20/2022, 2:21:56 PM",
           },
           genreId: {
             type: "integer",
             description: "id of the genre associated with the movie",
+            example: 6,
           },
         },
       },
