@@ -51,7 +51,7 @@ const register = async (req, res, next) => {
         name: body.name,
       };
       const createdWorkout = await User.create(newUser);
-      //emailer(newUser);
+      emailer(newUser);
       return res.send({ status: "OK", data: createdWorkout });
     } else {
       // si encuentra al usuario no se crea nada
